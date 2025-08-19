@@ -1,4 +1,36 @@
 [project]
 name = "backtester"
-version = "0.1"
-dependencies = []
+version = "0.1.0"
+description = "trading backtester"
+authors = [
+    {name = "Shun Fujita",email = "shunfujita2027@u.northwestern.edu"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.12.9"
+mypy = "^1.17.1"
+pytest = "^8.4.1"
+pytest-cov = "^6.2.1"
+pre-commit = "^4.3.0"
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+
+[tool.ruff]
+line-length = 88
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
