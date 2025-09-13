@@ -1,0 +1,23 @@
+version: '3'
+
+tasks:
+  deps:
+    cmds:
+      - mkdir -p build
+      - cd build && conan install .. --build=missing -s compiler.cppstd=gnu23 --output-folder=.
+    desc: Install dependencies with Conan
+
+  init:
+    cmds:
+      - cd build && cmake .. -DCMAKE_TOOLCHAIN_FILE=conan/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+    desc: Configure the project with CMake
+
+  build:
+    cmds:
+      - cd build && cmake --build .
+    desc: Build the project
+
+  test:
+    cmds:
+      - cd build && ctest --output-on-failure
+    desc: Run tests

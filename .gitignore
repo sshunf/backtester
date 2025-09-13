@@ -1,0 +1,50 @@
+# Build directories
+/build/
+/build-*/
+/out/
+/dist/
+
+# Conan artifacts
+/conan/
+/conan.lock
+CMakeUserPresets.json
+CMakePresets.json.user
+
+# CMake generated files
+CMakeFiles/
+/CMakeCache.txt
+cmake_install.cmake
+*.cmake
+
+# IDE/project files
+.vscode/
+/.idea/
+/*.code-workspace
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Testing artifacts
+Testing/
+CTestTestfile.cmake
+*.gcno
+*.gcda
+*.gcov
+
+# Binaries
+*.exe
+*.out
+*.obj
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+
+# Coverage/benchmarking
+coverage/
+benchmark_results/

@@ -1,0 +1,9 @@
+Checks: >
+  bugprone-*,performance-*,modernize-*,
+  readability-*,cppcoreguidelines-*,
+  -cppcoreguidelines-owning-memory
+
+WarningsAsErrors: bugprone-*,performance-*
+
+HeaderFilterRegex: '.*'
+FormatStyle:     none
