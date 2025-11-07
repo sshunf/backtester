@@ -1,58 +1,66 @@
 #pragma once
+
+#include <cstdint>
 #include <string>
 
-enum class Action : uint8_t
-{
-    SELL,
-    BUY
+namespace backtester {
+
+enum class Action : uint8_t {
+    BUY,
+    SELL
 };
 
-enum class EventType : uint8_t
-{
+enum class EventType : uint8_t {
     MARKET,
     SIGNAL,
     ORDER,
     FILL
 };
-struct Event
-{
+
+class Event {
+public:
     virtual ~Event() = default;
     virtual EventType type() const = 0;
 };
 
-struct MarketEvent : Event
-{
+class MarketEvent : public Event {
+public:
     EventType type() const override { return EventType::MARKET; }
 };
 
-struct SignalEvent : Event
-{
+class SignalEvent : public Event {
+public:
     std::string symbol;
     Action action;
-    EventType type() const override { return EventType::SIGNAL; }
 
-    SignalEvent(std::string sym, Action act) : symbol(std::move(sym)), action(act) {}
+    SignalEvent(std::string sym, Action act)
+        : symbol(std::move(sym)), action(act) {}
+
+    EventType type() const override { return EventType::SIGNAL; }
 };
 
-struct OrderEvent : Event
-{
+class OrderEvent : public Event {
+public:
     std::string symbol;
     Action action;
     int quantity;
-    EventType type() const override { return EventType::ORDER; }
 
     OrderEvent(std::string sym, Action act, int qty)
-        : symbol(std::move(sym)), action(act), quantity(qty)
-    {
-    }
+        : symbol(std::move(sym)), action(act), quantity(qty) {}
+
+    EventType type() const override { return EventType::ORDER; }
 };
 
-struct FillOrder : Event
-{
-    std::string symbol;
+class FillEvent : public Event {
+public:
     Action action;
+    double price;
     int quantity;
-    double fill_price;
+
+    FillEvent(Action act, double price_, int qty)
+        : action(act), price(price_), quantity(qty) {}
 
     EventType type() const override { return EventType::FILL; }
 };
+
+} // namespace backtester
