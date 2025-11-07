@@ -24,7 +24,7 @@ FetchContent_MakeAvailable(glaze)
 
 # ---- Library ----
 add_library(backtester_lib
-    src/DataHandlerCSV.cpp
+    src/DataHandler.cpp
 )
 
 target_include_directories(backtester_lib
@@ -46,7 +46,8 @@ target_link_libraries(backtester PRIVATE backtester_lib)
 
 # ---- Tests ----
 enable_testing()
-add_executable(tests tests/test_strategy.cpp)
+file(GLOB TEST_SOURCES CONFIGURE_DEPENDS tests/*.cpp)
+add_executable(tests ${TEST_SOURCES})
 target_link_libraries(tests PRIVATE backtester_lib GTest::gtest_main)
 include(GoogleTest)
 gtest_discover_tests(tests)
