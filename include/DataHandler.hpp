@@ -18,7 +18,7 @@ class DataHandler
     virtual bool has_next() const = 0;
 };
 
-class CSVDataHandler : DataHandler
+class CSVDataHandler : public DataHandler
 {
   private:
     std::string filename_;
