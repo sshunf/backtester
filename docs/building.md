@@ -14,7 +14,7 @@ Before building the project, ensure you have the following tools installed:
 
 ---
 
-## ⚙️ Setup
+## Setup
 
 **Detect Conan Profile**
 1. Run once to initialize Conan for your environment:
