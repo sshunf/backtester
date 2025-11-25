@@ -23,9 +23,12 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glaze)
 
 # ---- Library ----
-add_library(backtester_lib
-    src/DataHandler.cpp
+file(GLOB_RECURSE BACKTESTER_SOURCES
+    CONFIGURE_DEPENDS
+    src/*.cpp
 )
+
+add_library(backtester_lib ${BACKTESTER_SOURCES})
 
 target_include_directories(backtester_lib
     PUBLIC
