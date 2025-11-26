@@ -44,7 +44,7 @@ target_link_libraries(backtester_lib
 target_compile_features(backtester_lib PUBLIC cxx_std_23)
 
 # ---- Executable ----
-add_executable(backtester src/main.cpp)
+add_executable(backtester app/main.cpp)
 target_link_libraries(backtester PRIVATE backtester_lib)
 
 # ---- Tests ----
@@ -52,5 +52,5 @@ enable_testing()
 file(GLOB TEST_SOURCES CONFIGURE_DEPENDS tests/*.cpp)
 add_executable(tests ${TEST_SOURCES})
 target_link_libraries(tests PRIVATE backtester_lib GTest::gtest_main)
-include(GoogleTest)
-gtest_discover_tests(tests)
+target_compile_definitions(tests PRIVATE PROJECT_ROOT="${PROJECT_SOURCE_DIR}")
+add_test(NAME run_tests COMMAND tests)
