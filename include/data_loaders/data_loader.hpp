@@ -13,7 +13,7 @@ class DataLoader
 {
   public:
     virtual ~DataLoader() = default;
-    virtual void initialize() = 0;
+    virtual bool initialize() = 0;
     virtual std::unique_ptr<Event> next_event() = 0;
     virtual bool has_next() const = 0;
 };
@@ -28,7 +28,7 @@ class CSVDataLoader : public DataLoader
   public:
     explicit CSVDataLoader(std::string fname);
 
-    void initialize() override;
+    bool initialize() override;
     std::unique_ptr<Event> next_event() override;
     bool has_next() const override;
   

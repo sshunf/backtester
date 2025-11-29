@@ -67,24 +67,24 @@ private:
 
 class BarEvent: public Event {
 public:
-    BarEvent(int64_t ts, double open, double high, double low, double close, double volume)
-        : timestamp_(ts), high_(high), low_(low), close_(close), volume_(volume) {}
+    BarEvent(int64_t ts, double close, double high, double low, double open, double volume)
+        : timestamp_(ts), close_(close), high_(high), low_(low), open_(open), volume_(volume) {}
     
     EventType type() const override { return EventType::Bar; }
     int64_t timestamp() const override { return timestamp_; }
       
-    const double open() { return open_; }
+    const double close() { return close_; }
     const double high() { return high_; }
     const double low() { return low_; }
-    const double close() { return close_; }
+    const double open() { return open_; }
     const double volume() { return volume_; }
 
 private:
     int64_t timestamp_;
-    double open_;
+    double close_;
     double high_;
     double low_;
-    double close_;
+    double open_;
     double volume_;
 
 };
