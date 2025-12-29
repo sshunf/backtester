@@ -74,12 +74,12 @@ std::unique_ptr<Event> CSVDataLoader::parse_row(const std::string& row) {
         return nullptr;
     }
 
-    const std::string& first_value = fields[0];
-    if (first_value.find_first_not_of("0123456789-: ") != std::string::npos) {
+    int64_t timestamp = 0;
+
+    const std::string& datetime = fields[0];
+    if (datetime.find_first_not_of("0123456789-: +T") != std::string::npos) {
         return nullptr;
     }
-
-    int64_t timestamp = 0;
 
     try { 
         int64_t timestamp = to_unix_microseconds(fields[0]);

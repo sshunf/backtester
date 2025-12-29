@@ -1,35 +1,30 @@
 #include <gtest/gtest.h>
+#include <fstream>
 #include "data_loaders/data_loader.hpp"
 #include "events/event.hpp"
 #include "utils/time_utils.hpp"
 
-TEST(CSVDataLoaderTests, CountRows) {
-    std::string path = std::string(PROJECT_ROOT) + "/data/AAPL_data.csv";
-    std::cout << "Looking for CSV at: " << path << std::endl;
+namespace {
 
-    backtester::CSVDataLoader loader(path);
-    loader.initialize();
-
-    int count = 0;
-    ASSERT_EQ(loader.has_next(), true);
-    while (loader.has_next()) {
-        loader.next_event();
-        count++;
-    }
-
-    // Count expected rows dynamically
+int count_data_rows(const std::string& path) {
     std::ifstream f(path);
-    int expected = 0;
+    int lines = 0;
     std::string line;
-    while (std::getline(f, line)) expected++;
-
-    ASSERT_EQ(count, expected-3); // exclude the first three rows of dataset which contain labels
+    while (std::getline(f, line)) {
+        ++lines;
+    }
+    return lines >= 3 ? lines - 3 : 0; // skip headers
 }
 
-TEST(CSVDataLoaderTests, FirstEventParsedCorrectly) {
-    std::string path = std::string(PROJECT_ROOT) + "/data/AAPL_data.csv";
+void expect_first_bar(const std::string& path,
+                      const std::string& expected_timestamp,
+                      double expected_open,
+                      double expected_high,
+                      double expected_low,
+                      double expected_close,
+                      double expected_volume) {
     backtester::CSVDataLoader loader(path);
-    loader.initialize();
+    ASSERT_TRUE(loader.initialize());
 
     auto event = loader.next_event();
     ASSERT_NE(event, nullptr);
@@ -38,28 +33,88 @@ TEST(CSVDataLoaderTests, FirstEventParsedCorrectly) {
     ASSERT_NE(bar, nullptr);
 
     EXPECT_EQ(bar->timestamp(),
-              backtester::to_unix_microseconds("2025-01-02"));
+              backtester::to_unix_microseconds(expected_timestamp));
 
-    EXPECT_NEAR(bar->open(), 248.04944371, 1e-6);
-    EXPECT_NEAR(bar->high(), 248.21885574, 1e-6);
-    EXPECT_NEAR(bar->low(),  240.96460876, 1e-6);
-    EXPECT_NEAR(bar->close(),242.98742676, 1e-6);
-    EXPECT_NEAR(bar->volume(),55740700.0,  1e-6);
+    EXPECT_NEAR(bar->open(),   expected_open,   1e-6);
+    EXPECT_NEAR(bar->high(),   expected_high,   1e-6);
+    EXPECT_NEAR(bar->low(),    expected_low,    1e-6);
+    EXPECT_NEAR(bar->close(),  expected_close,  1e-6);
+    EXPECT_NEAR(bar->volume(), expected_volume, 1e-6);
 }
 
-TEST(CSVDataLoaderTests, EventsAreSortedByTimestamp) {
-    std::string path = std::string(PROJECT_ROOT) + "/data/AAPL_data.csv";
+void expect_sorted(const std::string& path) {
     backtester::CSVDataLoader loader(path);
-    loader.initialize();
+    ASSERT_TRUE(loader.initialize());
+    ASSERT_TRUE(loader.has_next());
 
-    auto e1 = loader.next_event();
-    auto e2 = loader.next_event();
-    auto e3 = loader.next_event();
+    auto prev = loader.next_event();
+    while (loader.has_next()) {
+        auto current = loader.next_event();
+        ASSERT_NE(current, nullptr);
+        EXPECT_LT(prev->timestamp(), current->timestamp());
+        prev = std::move(current);
+    }
+}
 
-    ASSERT_NE(e1, nullptr);
-    ASSERT_NE(e2, nullptr);
-    ASSERT_NE(e3, nullptr);
+} // namespace
 
-    EXPECT_LT(e1->timestamp(), e2->timestamp());
-    EXPECT_LT(e2->timestamp(), e3->timestamp());
+TEST(CSVDataLoaderTests, CountsDailyRows) {
+    std::string path = std::string(PROJECT_ROOT) + "/data/AAPL_data_1d.csv";
+
+    backtester::CSVDataLoader loader(path);
+    ASSERT_TRUE(loader.initialize());
+    ASSERT_TRUE(loader.has_next());
+
+    int count = 0;
+    while (loader.has_next()) {
+        loader.next_event();
+        ++count;
+    }
+
+    EXPECT_EQ(count, count_data_rows(path));
+}
+
+TEST(CSVDataLoaderTests, CountsIntradayRows) {
+    std::string path = std::string(PROJECT_ROOT) + "/data/AAPL_data_15m.csv";
+
+    backtester::CSVDataLoader loader(path);
+    ASSERT_TRUE(loader.initialize());
+
+    int count = 0;
+    while (loader.has_next()) {
+        loader.next_event();
+        ++count;
+    }
+
+    EXPECT_EQ(count, count_data_rows(path));
+}
+
+TEST(CSVDataLoaderTests, FirstDailyEventParsedCorrectly) {
+    expect_first_bar(
+        std::string(PROJECT_ROOT) + "/data/AAPL_data_1d.csv",
+        "2025-11-03",
+        270.15812755648943,
+        270.5877038096653,
+        265.9921525413924,
+        268.7894287109375,
+        50194600.0);
+}
+
+TEST(CSVDataLoaderTests, FirstIntradayEventParsedCorrectly) {
+    expect_first_bar(
+        std::string(PROJECT_ROOT) + "/data/AAPL_data_15m.csv",
+        "2025-12-01 14:30:00+00:00",
+        278.1499938964844,
+        278.7699890136719,
+        276.45001220703125,
+        276.4801025390625,
+        2290946.0);
+}
+
+TEST(CSVDataLoaderTests, DailyEventsAreSortedByTimestamp) {
+    expect_sorted(std::string(PROJECT_ROOT) + "/data/AAPL_data_1d.csv");
+}
+
+TEST(CSVDataLoaderTests, IntradayEventsAreSortedByTimestamp) {
+    expect_sorted(std::string(PROJECT_ROOT) + "/data/AAPL_data_15m.csv");
 }
