@@ -73,11 +73,11 @@ public:
     EventType type() const override { return EventType::Bar; }
     int64_t timestamp() const override { return timestamp_; }
       
-    const double close() { return close_; }
-    const double high() { return high_; }
-    const double low() { return low_; }
-    const double open() { return open_; }
-    const double volume() { return volume_; }
+    double close() const { return close_; }
+    double high() const { return high_; }
+    double low() const { return low_; }
+    double open() const { return open_; }
+    double volume() const { return volume_; }
 
 private:
     int64_t timestamp_;
