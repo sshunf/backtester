@@ -1,6 +1,6 @@
 # Backtester
 
-A high-performance C++ backtesting engine designed for trading strategies, emphasizing high-throughput and low-latency.
+A high-performance C++ backtesting engine
 
 ## Motivation
 After a summer as an intern at Point72, I was inspired to deepen my understanding of financial markets. At the same time, I had become increasingly interested in C++ and wanted a personal project that would push my systems-level skills further. Building a backtester felt like a great way to expose myself to both, forcing me to learn about market microstructure, data modeling, and trading logic while also requiring me to learn good engineering practices, performance considerations, and clean abstractions.
